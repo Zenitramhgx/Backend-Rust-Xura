@@ -1,8 +1,7 @@
-use crate::models::{codigos::Codigo, credenciales::Credencial};
+use crate::models::{codigos::Codigo};
 use crate::queries::codigos::{GET_CODIGO, GET_CODIGOS, DELETE_CODIGO, INSERT_CODIGO, VALIDAR_CODIGO, CONFIRMAR_CODIGO};
 use crate::services::credenciales::get_credencial;
 use sqlx::mysql::MySqlPool;
-use sqlx::Row;
 use std::error::Error;
 
 pub async fn get_codigo(pool: &MySqlPool, id_codigo: &str) -> Result<Option<Codigo>, Box<dyn Error>> {
@@ -58,7 +57,7 @@ pub async fn insert_codigo(
     tipo: &str,
     medio: &str,
 ) -> Result<Codigo, Box<dyn Error>> {
-    let _data = get_credencial(pool, id_credencial).await?;
+    let _data = get_credencial(pool, Some(id_credencial), None, None).await?;
     let row = sqlx::query_as::<_, Codigo>(INSERT_CODIGO)
         .bind(id_credencial)
         .bind(tipo)

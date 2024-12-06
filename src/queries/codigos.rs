@@ -14,9 +14,9 @@ pub const INSERT_CODIGO: &str = r#"
     CALL proc_insert_codigos(?, ?, ?);
 "#;
 
-pub const UPDATE_CODIGO: &str = r#"
-    CALL proc_update_codigos(?, ?);
-"#;
+// pub const UPDATE_CODIGO: &str = r#"
+//     CALL proc_update_codigos(?, ?);
+// "#;
 
 pub const VALIDAR_CODIGO: &str = r#"
     SELECT * FROM Codigos 

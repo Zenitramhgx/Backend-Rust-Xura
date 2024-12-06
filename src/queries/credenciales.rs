@@ -4,9 +4,7 @@ pub const INSERT_CREDENCIAL: &str = r#"
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 "#;
 
-pub const GET_CREDENCIAL: &str = r#"
-    SELECT * FROM Credenciales WHERE idCredencial = ?;
-"#;
+pub const GET_CREDENCIAL: &str = "SELECT * FROM Credenciales WHERE curp = ? OR correo = ? OR celular LIKE ?";
 
 pub const GET_CREDENCIALES: &str = r#"
     SELECT c.idCredencial, c.curp, c.nombre, c.primerApellido, c.segundoApellido, c.fechaNacimiento, c.estadoNacimiento,
@@ -21,12 +19,4 @@ pub const GET_CREDENCIALES: &str = r#"
     LEFT JOIN Miembros m ON c.idCredencial = m.idCredencial AND m.estado != 'Inactivo'
     LEFT JOIN Grupos g ON m.idGrupo = g.idGrupo AND g.estado != 'Inactivo'
     GROUP BY c.idCredencial;
-"#;
-
-pub const DELETE_CREDENCIAL: &str = r#"
-    UPDATE Credenciales SET estado = "Inactivo" WHERE idCredencial = ?;
-"#;
-
-pub const UPDATE_CREDENCIAL: &str = r#"
-    CALL proc_update_credenciales(?, ?, ?, ?, ?, ?);
 "#;

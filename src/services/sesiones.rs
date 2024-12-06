@@ -1,57 +1,67 @@
-use sqlx::mysql::MySqlPool;
-use sqlx::Error;
-use crate::queries::sesiones;
+use sqlx::{mysql::MySqlPool, Error};
+use crate::queries::sesiones::{GET_CREDENCIAL};
+use serde_json::json;
+use serde::Serialize;
+
+#[derive(sqlx::FromRow, Serialize, Debug)]
+pub struct Credencial {
+    id_credencial: String,
+    correo: String,
+    celular: String,
+}
 
 pub async fn get_sesion(
     pool: &MySqlPool,
-    curp: &Option<String>,
-    correo: &Option<String>,
-    celular: &Option<String>,
-    contrasena: Option<&str>,
-) -> Result<String, Error> {
-    // Implementación de la lógica de la sesión
-    Ok("Sesión válida".to_string())
+    curp: Option<&str>,
+    correo: Option<&str>,
+    celular: Option<&str>,
+    _contrasena: Option<&str>,
+) -> Result<serde_json::Value, Error> {
+    let celular_query = celular.map_or("%%".to_string(), |c| format!("%{}%", c));
+
+    log::info!("Ejecutando query con curp: {:?}, correo: {:?}, celular: {:?}", curp, correo, celular);
+
+    let query = sqlx::query_as::<_, Credencial>(GET_CREDENCIAL)
+        .bind(curp.unwrap_or_default())
+        .bind(correo.unwrap_or_default())
+        .bind(celular_query);
+
+    let result = query.fetch_optional(pool).await;
+
+    log::info!("Resultado de la query: {:?}", result);
+
+    match result {
+        Ok(Some(record)) => Ok(json!({
+            "statusCode": 0,
+            "idCredencial": record.id_credencial,
+            "correo": record.correo,
+            "celular": record.celular
+        })),
+        Ok(None) => Ok(json!({
+            "statusCode": 204,
+            "message": "No content"
+        })),
+        Err(err) => {
+            log::error!("Error al ejecutar query: {:?}", err);
+            Err(err)
+        }
+    }
 }
 
 pub async fn get_validacion(
     pool: &MySqlPool,
-    curp: &Option<String>,
-    correo: &Option<String>,
-    celular: &Option<String>,
-) -> Result<String, Error> {
-    // Implementación de validación
-    Ok("Validación exitosa".to_string())
+    curp: Option<&str>,
+    correo: Option<&str>,
+    celular: Option<&str>,
+) -> Result<serde_json::Value, Error> {
+    get_sesion(pool, curp, correo, celular, None).await
 }
 
 pub async fn get_autenticacion(
     pool: &MySqlPool,
-    curp: &Option<String>,
-    correo: &Option<String>,
-    celular: &Option<String>,
-) -> Result<String, Error> {
-    // Implementación de autenticación
-    Ok("Autenticación exitosa".to_string())
-}
-
-pub async fn delete_sesion(
-    pool: &MySqlPool,
-    id_credencial: &str,
-) -> Result<(), Error> {
-    sqlx::query(sesiones::DELETE_SESION)
-        .bind(id_credencial)
-        .execute(pool)
-        .await?;
-    Ok(())
-}
-
-pub async fn set_password(
-    pool: &MySqlPool,
-    id_credencial: &str,
-    curp: &str,
-    correo: &str,
-    celular: &str,
-    contrasena: &str,
-) -> Result<String, Error> {
-    // Implementación de establecer contraseña
-    Ok("Contraseña actualizada".to_string())
+    curp: Option<&str>,
+    correo: Option<&str>,
+    celular: Option<&str>,
+) -> Result<serde_json::Value, Error> {
+    get_sesion(pool, curp, correo, celular, None).await
 }
