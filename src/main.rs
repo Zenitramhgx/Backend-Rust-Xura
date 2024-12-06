@@ -21,8 +21,6 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
             .configure(routes::credenciales::config) // Rutas de credenciales
-            .configure(routes::sesiones::config) // Rutas de sesiones
-            .configure(routes::codigos::config)      // Rutas de códigos
     })
     .bind("localhost:3001")? // Dirección y puerto del servidor
     .run()

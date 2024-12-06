@@ -3,7 +3,6 @@ use sqlx::FromRow;
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
 pub struct Credencial {
-    pub id_credencial: Option<String>,
     pub curp: String,
     pub nombre: String,
     pub primer_apellido: String,
@@ -15,3 +14,4 @@ pub struct Credencial {
     pub contrasena: String,
     pub tipo: String,
 }
+
