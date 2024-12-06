@@ -114,3 +114,5 @@ Crea un archivo .env en la raíz del proyecto con el siguiente contenido:
 DATABASE_URL=mysql://usuario:contraseña@localhost/db_name
 X_API_KEY=tu_api_key_aqui
 ```
+De ser necesario las variables de entorno REALES, se puede comunicar conmigo para proveerlas.
+Estas variables de entorno son privadas y utilizadas por el área de TICS en Dirección General. Cualquier duda estamos a la orden.
